@@ -1,0 +1,30 @@
+version: '3.8'
+networks:
+  app-tier:
+    driver: bridge
+services:
+  convert:
+    tty: true
+    stdin_open: true
+    container_name: '${NAMESPACE}_convert'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: convert.docdict.live
+    volumes:
+      - local:/var/www/docker
+    working_dir: /var/www/docker
+    command: >
+      bash -c ". /etc/profile &&
+      bundle exec ruby app.rb -o 0.0.0.0"
+    ports:
+      - '4567:4567'
+    networks:
+      - app-tier
+volumes:
+  mongo:
+  local:
+    driver_opts:
+      type: none
+      device: ./
+      o: bind
